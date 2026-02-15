@@ -4,6 +4,20 @@
 	import { STAT_LABELS, getPillColor } from '$lib/utils/colors';
 	import { getOverallScore } from '$lib/utils/stats';
 
+	let {
+		pills,
+		xStat,
+		yStat,
+		zStat
+	}: { pills: Pill[]; xStat: StatKey; yStat: StatKey; zStat: StatKey } = $props();
+
+	let containerEl: HTMLDivElement | undefined = $state();
+	let tooltipEl: HTMLDivElement | undefined = $state();
+	let tooltipText = $state('');
+	let tooltipVisible = $state(false);
+	let tooltipX = $state(0);
+	let tooltipY = $state(0);
+
 	onMount(() => {
 		let mounted = true;
 		let renderer: any;
