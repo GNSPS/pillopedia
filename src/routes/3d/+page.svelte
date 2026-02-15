@@ -4,6 +4,7 @@
 	import { STAT_KEYS } from '$lib/types';
 	import { STAT_LABELS } from '$lib/utils/colors';
 	import { getOverallScore } from '$lib/utils/stats';
+	import { getPillColor } from '$lib/utils/colors';
 	import ScatterScene from '$lib/components/three/ScatterScene.svelte';
 
 	let { data } = $props();
@@ -11,6 +12,14 @@
 	let xStat: StatKey = $state('power');
 	let yStat: StatKey = $state('agility');
 	let zStat: StatKey = $state('top_speed');
+
+	function pillLegendColor(name: string, overall: number): string {
+		const hex = getPillColor(name);
+		if (hex) return hex;
+		const t = overall / 100;
+		const hue = Math.round((0.65 - t * 0.65) * 360);
+		return `hsl(${hue}, 90%, 50%)`;
+	}
 </script>
 
 <main class="container mx-auto px-4 py-8 max-w-6xl">
@@ -88,12 +97,10 @@
 		<div class="flex flex-wrap gap-3">
 			{#each data.pills as pill}
 				{@const overall = getOverallScore(pill)}
-				{@const t = overall / 100}
-				{@const hue = Math.round((0.65 - t * 0.65) * 360)}
 				<div class="flex items-center gap-2 text-sm text-gray-300">
 					<span
 						class="w-3 h-3 rounded-full inline-block"
-						style="background: hsl({hue}, 90%, 50%);"
+						style="background: {pillLegendColor(pill.name, overall)};"
 					></span>
 					{pill.name}
 					<span class="text-gray-500">({overall})</span>

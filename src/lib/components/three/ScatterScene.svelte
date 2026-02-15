@@ -1,58 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Pill, StatKey } from '$lib/types';
-	import { STAT_LABELS } from '$lib/utils/colors';
+	import { STAT_LABELS, getPillColor } from '$lib/utils/colors';
 	import { getOverallScore } from '$lib/utils/stats';
-
-	let {
-		pills,
-		xStat,
-		yStat,
-		zStat
-	}: { pills: Pill[]; xStat: StatKey; yStat: StatKey; zStat: StatKey } = $props();
-
-	let containerEl: HTMLDivElement | undefined = $state();
-	let tooltipEl: HTMLDivElement | undefined = $state();
-	let tooltipText = $state('');
-	let tooltipVisible = $state(false);
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-
-	const COLOR_MAP: Record<string, number> = {
-		red: 0xff3333,
-		vermelho: 0xff3333,
-		orange: 0xff8c00,
-		laranja: 0xff8c00,
-		yellow: 0xffd700,
-		amarelo: 0xffd700,
-		green: 0x22cc44,
-		verde: 0x22cc44,
-		blue: 0x3388ff,
-		azul: 0x3388ff,
-		purple: 0xaa44ff,
-		roxo: 0xaa44ff,
-		pink: 0xff66aa,
-		rosa: 0xff66aa,
-		white: 0xeeeeff,
-		branco: 0xeeeeff,
-		black: 0x444444,
-		preto: 0x444444,
-		gold: 0xffd700,
-		dourado: 0xffd700,
-		silver: 0xc0c0c0,
-		prata: 0xc0c0c0,
-		cyan: 0x00cccc,
-		ciano: 0x00cccc,
-		magenta: 0xff00ff,
-	};
-
-	function getPillColor(name: string): number | null {
-		const lower = name.toLowerCase();
-		for (const [word, color] of Object.entries(COLOR_MAP)) {
-			if (lower.includes(word)) return color;
-		}
-		return null;
-	}
 
 	onMount(() => {
 		let mounted = true;
@@ -237,8 +187,8 @@
 					// Color: check name for color words, fallback to overall-score heatmap
 					const nameColor = getPillColor(pill.name);
 					const color = new THREE.Color();
-					if (nameColor !== null) {
-						color.setHex(nameColor);
+					if (nameColor) {
+						color.set(nameColor);
 					} else {
 						const t = getOverallScore(pill) / 100;
 						color.setHSL(0.65 - t * 0.65, 0.9, 0.5);
