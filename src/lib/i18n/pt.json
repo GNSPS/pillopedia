@@ -1,0 +1,83 @@
+{
+	"nav": {
+		"home": "Inicio",
+		"compare": "Comparar",
+		"rankings": "Rankings",
+		"teams": "Equipas",
+		"threeD": "3D",
+		"admin": "Admin"
+	},
+	"stats": {
+		"power": "Potencia",
+		"reaction_time": "Tempo de Reaccao",
+		"agility": "Agilidade",
+		"coordination": "Coordenacao",
+		"top_speed": "Velocidade Maxima",
+		"recovery": "Recuperacao"
+	},
+	"home": {
+		"title": "Pillopedia",
+		"subtitle": "A enciclopedia definitiva de pills"
+	},
+	"detail": {
+		"stats": "Estatisticas",
+		"overall": "Geral",
+		"edit": "Editar"
+	},
+	"compare": {
+		"title": "Comparar Pills",
+		"selectPills": "Selecionar pills para comparar",
+		"vs": "vs",
+		"winner": "Vencedor",
+		"draw": "Empate"
+	},
+	"rankings": {
+		"title": "Rankings",
+		"rank": "Posicao",
+		"name": "Nome",
+		"overall": "Geral",
+		"sortBy": "Ordenar por",
+		"podium": "Top 3",
+		"categoryLeaders": "Lideres por Categoria",
+		"leaderboard": "Classificacao",
+		"score": "Pontuacao"
+	},
+	"teams": {
+		"title": "Construtor de Equipas",
+		"addPill": "Adicionar Pill",
+		"removePill": "Remover Pill",
+		"teamStats": "Estatisticas da Equipa",
+		"available": "Pills Disponiveis",
+		"yourTeam": "A Tua Equipa",
+		"averageStats": "Estatisticas Medias",
+		"noPills": "Clica nas pills para as adicionar a tua equipa",
+		"maxReached": "Tamanho maximo da equipa atingido"
+	},
+	"threeD": {
+		"title": "Visualizacao 3D",
+		"xAxis": "Eixo X",
+		"yAxis": "Eixo Y",
+		"zAxis": "Eixo Z",
+		"selectStat": "Selecionar estatistica",
+		"instructions": "Arrastar para rodar, scroll para zoom",
+		"legend": "Legenda"
+	},
+	"admin": {
+		"create": "Criar Pill",
+		"edit": "Editar Pill",
+		"password": "Password",
+		"enter": "Entrar",
+		"name": "Nome",
+		"imageUrl": "URL da Imagem",
+		"searchUnsplash": "Pesquisar Unsplash",
+		"save": "Guardar",
+		"saving": "A guardar...",
+		"cancel": "Cancelar"
+	},
+	"common": {
+		"loading": "A carregar...",
+		"error": "Erro",
+		"noData": "Sem dados",
+		"back": "Voltar"
+	}
+}

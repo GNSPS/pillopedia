@@ -1,0 +1,83 @@
+{
+	"nav": {
+		"home": "Home",
+		"compare": "Compare",
+		"rankings": "Rankings",
+		"teams": "Teams",
+		"threeD": "3D",
+		"admin": "Admin"
+	},
+	"stats": {
+		"power": "Power",
+		"reaction_time": "Reaction Time",
+		"agility": "Agility",
+		"coordination": "Coordination",
+		"top_speed": "Top Speed",
+		"recovery": "Recovery"
+	},
+	"home": {
+		"title": "Pillopedia",
+		"subtitle": "The ultimate pill encyclopedia"
+	},
+	"detail": {
+		"stats": "Stats",
+		"overall": "Overall",
+		"edit": "Edit"
+	},
+	"compare": {
+		"title": "Compare Pills",
+		"selectPills": "Select pills to compare",
+		"vs": "vs",
+		"winner": "Winner",
+		"draw": "Draw"
+	},
+	"rankings": {
+		"title": "Rankings",
+		"rank": "Rank",
+		"name": "Name",
+		"overall": "Overall",
+		"sortBy": "Sort by",
+		"podium": "Top 3",
+		"categoryLeaders": "Category Leaders",
+		"leaderboard": "Leaderboard",
+		"score": "Score"
+	},
+	"teams": {
+		"title": "Team Builder",
+		"addPill": "Add Pill",
+		"removePill": "Remove Pill",
+		"teamStats": "Team Stats",
+		"available": "Available Pills",
+		"yourTeam": "Your Team",
+		"averageStats": "Average Stats",
+		"noPills": "Click pills to add them to your team",
+		"maxReached": "Max team size reached"
+	},
+	"threeD": {
+		"title": "3D Visualization",
+		"xAxis": "X Axis",
+		"yAxis": "Y Axis",
+		"zAxis": "Z Axis",
+		"selectStat": "Select stat",
+		"instructions": "Drag to rotate, scroll to zoom",
+		"legend": "Legend"
+	},
+	"admin": {
+		"create": "Create Pill",
+		"edit": "Edit Pill",
+		"password": "Password",
+		"enter": "Enter",
+		"name": "Name",
+		"imageUrl": "Image URL",
+		"searchUnsplash": "Search Unsplash",
+		"save": "Save",
+		"saving": "Saving...",
+		"cancel": "Cancel"
+	},
+	"common": {
+		"loading": "Loading...",
+		"error": "Error",
+		"noData": "No data",
+		"back": "Back"
+	}
+}

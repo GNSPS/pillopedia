@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+:root {
+	--color-base: #0a0a1a;
+	--color-surface: #12122a;
+	--color-surface-2: #1a1a3e;
+	--color-accent: #ff6b35;
+	--color-power: #ff6b35;
+	--color-reaction: #4ea8de;
+	--color-agility: #84cc16;
+	--color-coordination: #a855f7;
+	--color-speed: #eab308;
+	--color-recovery: #ef4444;
+}
+
+body {
+	font-family: system-ui, -apple-system, sans-serif;
+	background-color: var(--color-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Bangers', cursive;
+	letter-spacing: 0.05em;
+}
