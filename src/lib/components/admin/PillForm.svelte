@@ -26,7 +26,32 @@
 	});
 
 	let saving = $state(false);
+	let uploading = $state(false);
 	let error = $state('');
+
+	async function handleFileUpload(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		uploading = true;
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+			const res = await fetch('/api/upload', { method: 'POST', body: formData });
+			if (!res.ok) {
+				const data = await res.json();
+				error = data.error || 'Upload failed';
+				return;
+			}
+			const data = await res.json();
+			image_url = data.url;
+		} catch {
+			error = 'Upload failed';
+		} finally {
+			uploading = false;
+		}
+	}
 
 	async function handleSubmit() {
 		if (!name.trim()) {
@@ -65,8 +90,29 @@
 
 	<div class="form-group">
 		<span class="form-label">{$_('admin.imageUrl')}</span>
-		<UnsplashSearch bind:selectedUrl={image_url} />
-		{#if !image_url}
+
+		{#if image_url}
+			<div class="image-preview">
+				<img src={image_url} alt="Selected" class="preview-img" />
+				<button type="button" class="clear-btn" onclick={() => (image_url = '')}>&#10005;</button>
+			</div>
+		{:else}
+			<label class="upload-btn">
+				{#if uploading}
+					{$_('common.loading')}
+				{:else}
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="17 8 12 3 7 8" />
+						<line x1="12" y1="3" x2="12" y2="15" />
+					</svg>
+					Upload Image
+				{/if}
+				<input type="file" accept="image/*" onchange={handleFileUpload} hidden />
+			</label>
+
+			<UnsplashSearch bind:selectedUrl={image_url} />
+
 			<input
 				type="text"
 				class="form-input url-input"
@@ -135,6 +181,55 @@
 
 	.url-input {
 		margin-top: 8px;
+	}
+
+	.upload-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px;
+		background: var(--color-surface-2);
+		border: 2px dashed #444;
+		border-radius: 10px;
+		color: #ccc;
+		font-size: 0.95rem;
+		cursor: pointer;
+		transition: border-color 0.2s, color 0.2s;
+	}
+
+	.upload-btn:hover {
+		border-color: var(--color-accent);
+		color: #fff;
+	}
+
+	.image-preview {
+		position: relative;
+		display: inline-block;
+		max-width: 200px;
+	}
+
+	.preview-img {
+		width: 100%;
+		border-radius: 10px;
+		border: 2px solid var(--color-accent);
+	}
+
+	.clear-btn {
+		position: absolute;
+		top: 4px;
+		right: 4px;
+		width: 24px;
+		height: 24px;
+		background: rgba(0, 0, 0, 0.7);
+		border: none;
+		border-radius: 50%;
+		color: #fff;
+		font-size: 0.75rem;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.form-error {

@@ -36,7 +36,7 @@ if (count.count === 0) {
 		INSERT INTO pills (name, image_url, power, reaction_time, agility, coordination, top_speed, recovery)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`);
-	insert.run('Tesla Laranja', '', 97, 32, 78, 44, 89, 95);
+	insert.run('Orange Tesla', '', 97, 32, 78, 44, 89, 95);
 	insert.run('Purple Maserati', '', 95, 88, 72, 40, 96, 90);
 }
 
