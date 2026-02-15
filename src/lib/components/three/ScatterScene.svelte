@@ -18,6 +18,42 @@
 	let tooltipX = $state(0);
 	let tooltipY = $state(0);
 
+	const COLOR_MAP: Record<string, number> = {
+		red: 0xff3333,
+		vermelho: 0xff3333,
+		orange: 0xff8c00,
+		laranja: 0xff8c00,
+		yellow: 0xffd700,
+		amarelo: 0xffd700,
+		green: 0x22cc44,
+		verde: 0x22cc44,
+		blue: 0x3388ff,
+		azul: 0x3388ff,
+		purple: 0xaa44ff,
+		roxo: 0xaa44ff,
+		pink: 0xff66aa,
+		rosa: 0xff66aa,
+		white: 0xeeeeff,
+		branco: 0xeeeeff,
+		black: 0x444444,
+		preto: 0x444444,
+		gold: 0xffd700,
+		dourado: 0xffd700,
+		silver: 0xc0c0c0,
+		prata: 0xc0c0c0,
+		cyan: 0x00cccc,
+		ciano: 0x00cccc,
+		magenta: 0xff00ff,
+	};
+
+	function getPillColor(name: string): number | null {
+		const lower = name.toLowerCase();
+		for (const [word, color] of Object.entries(COLOR_MAP)) {
+			if (lower.includes(word)) return color;
+		}
+		return null;
+	}
+
 	onMount(() => {
 		let mounted = true;
 		let renderer: any;
@@ -50,10 +86,55 @@
 			const controls = new OrbitControls(camera, renderer.domElement);
 			controls.enableDamping = true;
 			controls.dampingFactor = 0.05;
+			controls.autoRotate = false;
+			controls.autoRotateSpeed = 1.2;
 
-			// Grid
-			const gridHelper = new THREE.GridHelper(100, 10, 0x1a1a3e, 0x12122a);
-			scene.add(gridHelper);
+			// Idle auto-rotate
+			let idleTimeout: ReturnType<typeof setTimeout>;
+			const IDLE_DELAY = 3000;
+
+			function resetIdle() {
+				controls.autoRotate = false;
+				clearTimeout(idleTimeout);
+				idleTimeout = setTimeout(() => {
+					controls.autoRotate = true;
+				}, IDLE_DELAY);
+			}
+
+			renderer.domElement.addEventListener('pointerdown', resetIdle);
+			renderer.domElement.addEventListener('pointermove', (e: PointerEvent) => {
+				if (e.buttons > 0) resetIdle();
+			});
+			renderer.domElement.addEventListener('wheel', resetIdle);
+			// Start the idle timer immediately
+			idleTimeout = setTimeout(() => {
+				controls.autoRotate = true;
+			}, IDLE_DELAY);
+
+			// Grid — positive quadrant only (XZ plane, Y=0)
+			const gridSize = 50;
+			const gridDivisions = 10;
+			const gridMat = new THREE.LineBasicMaterial({ color: 0x1a1a3e });
+			const gridGroup = new THREE.Group();
+			for (let i = 0; i <= gridDivisions; i++) {
+				const t = (i / gridDivisions) * gridSize;
+				// Lines along X
+				const geoX = new THREE.BufferGeometry().setFromPoints([
+					new THREE.Vector3(0, 0, t),
+					new THREE.Vector3(gridSize, 0, t)
+				]);
+				gridGroup.add(new THREE.Line(geoX, gridMat));
+				// Lines along Z
+				const geoZ = new THREE.BufferGeometry().setFromPoints([
+					new THREE.Vector3(t, 0, 0),
+					new THREE.Vector3(t, 0, gridSize)
+				]);
+				gridGroup.add(new THREE.Line(geoZ, gridMat));
+			}
+			scene.add(gridGroup);
+
+			// Center orbit controls on middle of positive quadrant
+			controls.target.set(25, 25, 25);
 
 			// Axes
 			const axisLength = 55;
@@ -72,30 +153,30 @@
 				return new THREE.Line(geo, axisMat(color));
 			}
 
-			scene.add(makeLine([0, 0, 0], [axisLength, 0, 0], 0xff6b35)); // X red-orange
-			scene.add(makeLine([0, 0, 0], [0, axisLength, 0], 0x84cc16)); // Y green
-			scene.add(makeLine([0, 0, 0], [0, 0, axisLength], 0x4ea8de)); // Z blue
+			scene.add(makeLine([0, 0, 0], [axisLength, 0, 0], 0xff6b35));
+			scene.add(makeLine([0, 0, 0], [0, axisLength, 0], 0x84cc16));
+			scene.add(makeLine([0, 0, 0], [0, 0, axisLength], 0x4ea8de));
 
-			// Axis label sprites
-			function makeLabel(text: string, position: THREE.Vector3, color: string) {
+			// Sprite label helper
+			function makeLabel(text: string, position: THREE.Vector3, color: string, fontSize = 32, canvasWidth = 256, canvasHeight = 64) {
 				const canvas = document.createElement('canvas');
-				canvas.width = 256;
-				canvas.height = 64;
+				canvas.width = canvasWidth;
+				canvas.height = canvasHeight;
 				const ctx = canvas.getContext('2d')!;
-				ctx.font = "bold 32px 'Bangers', sans-serif";
+				ctx.font = `bold ${fontSize}px 'Bangers', sans-serif`;
 				ctx.fillStyle = color;
 				ctx.textAlign = 'center';
-				ctx.fillText(text, 128, 44);
+				ctx.textBaseline = 'middle';
+				ctx.fillText(text, canvasWidth / 2, canvasHeight / 2);
 				const texture = new THREE.CanvasTexture(canvas);
-				const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+				const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
 				const sprite = new THREE.Sprite(mat);
 				sprite.position.copy(position);
-				sprite.scale.set(16, 4, 1);
+				sprite.scale.set(canvasWidth / 16, canvasHeight / 16, 1);
 				return sprite;
 			}
 
 			function updateLabels() {
-				// Remove old labels
 				scene.children
 					.filter((c: any) => c.userData?.isAxisLabel)
 					.forEach((c: any) => scene.remove(c));
@@ -127,30 +208,41 @@
 
 			updateLabels();
 
-			// Spheres
+			// Spheres + name labels
 			const sphereGroup = new THREE.Group();
 			scene.add(sphereGroup);
+			const labelGroup = new THREE.Group();
+			scene.add(labelGroup);
 
 			const raycaster = new THREE.Raycaster();
 			const mouse = new THREE.Vector2();
 			const pillMap = new Map<any, Pill>();
 
 			function updateSpheres() {
-				// Clear old spheres
 				while (sphereGroup.children.length) {
 					const child = sphereGroup.children[0] as any;
 					child.geometry?.dispose();
 					child.material?.dispose();
 					sphereGroup.remove(child);
 				}
+				while (labelGroup.children.length) {
+					const child = labelGroup.children[0] as any;
+					child.material?.map?.dispose();
+					child.material?.dispose();
+					labelGroup.remove(child);
+				}
 				pillMap.clear();
 
 				pills.forEach((pill) => {
-					const overall = getOverallScore(pill);
-					// Map 0-100 to cool->hot color
-					const t = overall / 100;
+					// Color: check name for color words, fallback to overall-score heatmap
+					const nameColor = getPillColor(pill.name);
 					const color = new THREE.Color();
-					color.setHSL(0.65 - t * 0.65, 0.9, 0.5); // blue->red
+					if (nameColor !== null) {
+						color.setHex(nameColor);
+					} else {
+						const t = getOverallScore(pill) / 100;
+						color.setHSL(0.65 - t * 0.65, 0.9, 0.5);
+					}
 
 					const geo = new THREE.SphereGeometry(1.8, 16, 16);
 					const mat = new THREE.MeshStandardMaterial({
@@ -162,7 +254,6 @@
 					});
 					const mesh = new THREE.Mesh(geo, mat);
 
-					// Scale stat values (0-100) to scene coordinates (0-50)
 					const x = (pill[xStat] / 100) * 50;
 					const y = (pill[yStat] / 100) * 50;
 					const z = (pill[zStat] / 100) * 50;
@@ -170,6 +261,12 @@
 
 					pillMap.set(mesh, pill);
 					sphereGroup.add(mesh);
+
+					// Name label above the sphere
+					const hexStr = '#' + color.getHexString();
+					const nameLabel = makeLabel(pill.name, new THREE.Vector3(x, y + 3.5, z), hexStr, 28, 320, 48);
+					nameLabel.userData.isPillLabel = true;
+					labelGroup.add(nameLabel);
 				});
 			}
 
@@ -238,6 +335,7 @@
 			// Cleanup
 			return () => {
 				mounted = false;
+				clearTimeout(idleTimeout);
 				cancelAnimationFrame(animId);
 				window.removeEventListener('resize', onResize);
 				containerEl?.removeEventListener('mousemove', onMouseMove);
